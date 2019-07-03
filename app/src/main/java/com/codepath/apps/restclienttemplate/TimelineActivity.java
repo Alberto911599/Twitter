@@ -2,11 +2,14 @@ package com.codepath.apps.restclienttemplate;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -14,6 +17,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
@@ -21,6 +25,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class TimelineActivity extends AppCompatActivity {
 
+    public static final int COMPOSE_TWEET_REQUEST_CODE = 1;
     private TwitterClient client;
     TweetAdapter tweetAdapter;
     ArrayList<Tweet> tweets;
@@ -43,6 +48,7 @@ public class TimelineActivity extends AppCompatActivity {
         rvTweets.setLayoutManager(new LinearLayoutManager(this));
         // set adapter
         rvTweets.setAdapter(tweetAdapter);
+        Log.d("TAG", "BP");
         populateTimeline();
 
     }
@@ -51,7 +57,7 @@ public class TimelineActivity extends AppCompatActivity {
         client.getHomeTimeline(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-//                Log.d("TwitterClient", response.toString());
+                // Log.d("TwitterClient", response.toString());
                 // iterate through the JSON array
                 // for each entry, deserialize the JSON model
                 for(int i = 0; i < response.length(); i++){
@@ -98,10 +104,41 @@ public class TimelineActivity extends AppCompatActivity {
         return true;
     }
 
-    public void onComposeTweet() {
-        // first parameter is the context, second is the class of the activity to launch
-        Intent i = new Intent(TimelineActivity.this, ComposeActivity.class);
-        startActivityForResult(i, 1);
+//    public void onComposeTweet() {
+//        // first parameter is the context, second is the class of the activity to launch
+//        Intent i = new Intent(TimelineActivity.this, ComposeActivity.class);
+//        startActivityForResult(i, 1);
+//    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.miCompose:
+                composeMessage();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(requestCode == COMPOSE_TWEET_REQUEST_CODE && resultCode == RESULT_OK) {
+            Tweet resultTweet = (Tweet) Parcels.unwrap(getIntent().getParcelableExtra(Tweet.class.getSimpleName()));
+            tweets.add(0, resultTweet);
+            tweetAdapter.notifyItemInserted(0);
+            rvTweets.scrollToPosition(0);
+            Toast.makeText(this, "Tweet post succeded", Toast.LENGTH_LONG).show();
+
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void composeMessage() {
+        Intent composeTweet = new Intent(this, ComposeActivity.class);
+        startActivityForResult(composeTweet,
+                COMPOSE_TWEET_REQUEST_CODE);
     }
 
 }

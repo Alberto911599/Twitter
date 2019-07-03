@@ -38,4 +38,6 @@ public class TwitterApp extends Application {
     public MyDatabase getMyDatabase() {
         return myDatabase;
     }
+
+
 }
