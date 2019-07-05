@@ -1,5 +1,6 @@
 package com.codepath.apps.restclienttemplate;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -39,6 +40,9 @@ public class TimelineActivity extends AppCompatActivity {
     RecyclerView rvTweets;
     MenuItem miActionProgressItem;
     private ImageButton btnReply;
+    private ActionBar actionBar;
+    private EndlessRecyclerViewScrollListener scrollListener;
+    private long maxId = 0;
 
 
 
@@ -47,6 +51,8 @@ public class TimelineActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
         client = TwitterApp.getRestClient(this);
+//        actionBar = getActionBar();
+//        actionBar.setBackgroundDrawable(new ColorDrawable(Color.RED));
 
         // find the RecyclerView
         rvTweets = findViewById(R.id.rvTweet);
@@ -55,7 +61,20 @@ public class TimelineActivity extends AppCompatActivity {
         // construct the adapter from this data source
         tweetAdapter = new TweetAdapter(tweets);
         // RecyclerView setup (layout manager, use adapter)
-        rvTweets.setLayoutManager(new LinearLayoutManager(this));
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        rvTweets.setLayoutManager(linearLayoutManager);
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                loadNextDataFromApi(page);
+            }
+        };
+        // Adds the scroll listener to RecyclerView
+        rvTweets.addOnScrollListener(scrollListener);
+
         // set adapter
         rvTweets.setAdapter(tweetAdapter);
 
@@ -86,17 +105,28 @@ public class TimelineActivity extends AppCompatActivity {
 
     }
 
+    public void loadNextDataFromApi(int offset) {
+        maxId = tweets.get(tweets.size()-1).uid;
+        populateTimeline(maxId);
+
+        // Send an API request to retrieve appropriate paginated data
+        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
+        //  --> Deserialize and construct new model objects from the API response
+        //  --> Append the new data objects to the existing set of items inside the array of items
+        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
+    }
+
     public void fetchTimelineAsync(int page) {
         // Send the network request to fetch the updated data
         // `client` here is an instance of Android Async HTTP
         // getHomeTimeline is an example endpoint.
-        client.getHomeTimeline(new JsonHttpResponseHandler(){
+        client.getHomeTimeline(maxId, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 Log.d("TAG", "Sucess");
                 tweetAdapter.clear();
                 ArrayList<Tweet> list = new ArrayList<>();
-                for(int i = 0; i < response.length(); i++){
+                for (int i = 0; i < response.length(); i++) {
                     try {
                         list.add(Tweet.fromJSON(response.getJSONObject(i)));
                     } catch (JSONException e) {
@@ -110,9 +140,9 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
 
-    private void populateTimeline(){
+    private void populateTimeline(long maxId){
         showProgressBar();
-        client.getHomeTimeline(new JsonHttpResponseHandler() {
+        client.getHomeTimeline(maxId, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 // Log.d("TwitterClient", response.toString());
@@ -172,7 +202,7 @@ public class TimelineActivity extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         // Store instance of the menu item containing progress
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
-        populateTimeline();
+        populateTimeline(maxId);
         // Extract the action-view from the menu item
         ProgressBar v =  (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
         // Return to finish
