@@ -400,6 +400,14 @@ color foreground_material_dark
 color foreground_material_light
 color highlighted_text_material_dark
 color highlighted_text_material_light
+color inline_action
+color inline_action_disabled
+color inline_action_like
+color inline_action_like_pressed
+color inline_action_pressed
+color inline_action_retweet
+color inline_action_retweet_pressed
+color light_gray
 color material_blue_grey_800
 color material_blue_grey_900
 color material_blue_grey_950
@@ -412,6 +420,13 @@ color material_grey_600
 color material_grey_800
 color material_grey_850
 color material_grey_900
+color medium_gray
+color medium_gray_30
+color medium_gray_50
+color medium_green
+color medium_red
+color medium_red_30
+color medium_red_50
 color notification_action_color_filter
 color notification_icon_bg_color
 color notification_material_background_media_default_color
@@ -437,6 +452,10 @@ color switch_thumb_normal_material_dark
 color switch_thumb_normal_material_light
 color tooltip_background_dark
 color tooltip_background_light
+color twitter_blue
+color twitter_blue_30
+color twitter_blue_50
+color twitter_blue_fill_pressed
 dimen abc_action_bar_content_inset_material
 dimen abc_action_bar_content_inset_with_nav
 dimen abc_action_bar_default_height_material
@@ -647,8 +666,11 @@ drawable abc_textfield_search_activated_mtrl_alpha
 drawable abc_textfield_search_default_mtrl_alpha
 drawable abc_textfield_search_material
 drawable abc_vector_test
+drawable ic_comment
 drawable ic_compose
 drawable ic_launcher
+drawable ic_like
+drawable ic_rt
 drawable notification_action_background
 drawable notification_bg
 drawable notification_bg_low
@@ -698,6 +720,9 @@ id barrier
 id beginning
 id blocking
 id bottom
+id btnComment
+id btnLike
+id btnRt
 id btnSend
 id buttonPanel
 id cancel_action
@@ -710,6 +735,7 @@ id chronometer
 id clip_horizontal
 id clip_vertical
 id collapseActionView
+id compose_layout
 id content
 id contentPanel
 id custom
@@ -750,6 +776,7 @@ id listMode
 id list_item
 id media_actions
 id message
+id miActionProgress
 id miCompose
 id middle
 id multiply
@@ -762,6 +789,7 @@ id notification_main_column_container
 id packed
 id parent
 id parentPanel
+id pbProgressAction
 id percent
 id progress_circular
 id progress_horizontal
@@ -801,6 +829,7 @@ id start
 id status_bar_latest_event_content
 id submenuarrow
 id submit_area
+id swipeContainer
 id tabMode
 id tag_transition_group
 id tag_unhandled_key_event_manager
@@ -816,6 +845,7 @@ id title_template
 id top
 id topPanel
 id tvBody
+id tvCharCounter
 id tvDate
 id tvUserName
 id uniform
@@ -857,8 +887,10 @@ layout abc_search_dropdown_item_icons_2line
 layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
+layout action_view_progress
 layout activity_compose
 layout activity_login
+layout activity_reply
 layout activity_timeline
 layout item_tweet
 layout notification_action
