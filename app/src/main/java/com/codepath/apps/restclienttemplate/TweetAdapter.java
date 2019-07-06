@@ -51,12 +51,21 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder>{
         holder.tvDate.setText(getRelativeTimeAgo(tweet.createdAt));
 
         Glide.with(context).load(tweet.user.profileImageUrl).into(holder.ivProfileImage);
+        if(tweet.hasEntities){
+            String entityUrl = tweet.entity.mediaUrl;
+            holder.ivEntity.setVisibility(View.VISIBLE);
+            Glide.with(context).load(entityUrl).into(holder.ivEntity);
+        }
+        else
+            holder.ivEntity.setVisibility(View.GONE);
+
     }
 
     // create ViewHolder class
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView ivProfileImage;
+        public ImageView ivEntity;
         public TextView tvUsername;
         public TextView tvBody;
         public TextView tvDate;
@@ -66,6 +75,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder>{
 
             // perform findViewById lookups
             ivProfileImage = itemView.findViewById(R.id.ivProfileImage);
+            ivEntity = itemView.findViewById(R.id.ivEntity);
             tvUsername = itemView.findViewById(R.id.tvUserName);
             tvBody = itemView.findViewById(R.id.tvBody);
             tvDate = itemView.findViewById(R.id.tvDate);
